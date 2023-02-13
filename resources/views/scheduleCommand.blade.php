@@ -28,7 +28,19 @@
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Command</label>
-                        <input type="text" class="form-control @error('command') is-invalid @enderror" name="command" value="daily-quote" readonly>
+                        <select name="command" class="form-control" required>
+                            @if(count($commands)>0)
+                            <option value="">Select</option>
+                            @foreach($commands as $command)
+                            <option value="{{$command->id}}">{{ucfirst($command->name)}}</option>
+                            @endforeach
+                            @else
+                            <option value="">Select</option>
+                            @endif
+                        </select>
+                        @error('command')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Schedule At</label>

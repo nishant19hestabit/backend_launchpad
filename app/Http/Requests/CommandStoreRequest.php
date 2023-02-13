@@ -24,8 +24,8 @@ class CommandStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'command'=>'required',
-            'time'=>'required',
+            'command' => 'required|numeric',
+            'time' => 'required',
         ];
     }
 }

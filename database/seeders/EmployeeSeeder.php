@@ -24,7 +24,7 @@ class EmployeeSeeder extends Seeder
     {
         Employee::query()->delete();
         $faker = Factory::create();
-        $limit = 2000000;
+        $limit = 200000;
         $inputs = [];
         $emailData = [];
 

@@ -18,11 +18,12 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $storeCommand = StoreCommand::find(1);
-        if (!empty($storeCommand) && ($storeCommand->start != null)) {
-            $time = date('H:i', strtotime($storeCommand->start));
-            $newTime = (string) $time;
-            $schedule->command('daily-quote')->dailyAt($newTime);
+        $storeCommand = StoreCommand::all();
+        if (count($storeCommand) > 0) {
+            foreach ($storeCommand as $command) {
+                $time = date('H:i', strtotime($command->start));
+                $schedule->command($command->name)->dailyAt($time);
+            }
         }
     }
 
