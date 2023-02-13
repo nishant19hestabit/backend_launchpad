@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-// Route::get('/quote', [RandomController::class, 'index']);
+Route::get('/quote', [RandomController::class, 'index']);
 
 Route::get('/', [LoginController::class, 'index']);
 Route::get('/login', [LoginController::class, 'login'])->name('login');
