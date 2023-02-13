@@ -14,11 +14,11 @@ class UserRepository
         if ($request->user()->hasRole('teacher')) {
             $users = User::whereHas('roles', function ($q) {
                 $q->where('name', '=', 'student');
-            })->with('roles')->get(10);
+            })->with('roles')->get();
         } else {
             $users = User::whereHas('roles', function ($q) {
                 $q->where('name', '!=', 'admin');
-            })->with('roles')->get(10);
+            })->with('roles')->get();
         }
         if (count($users) > 0) {
             return Response::json(['status' => true, 'message' => 'User list founded successfully', 'data' => $users], 200);
