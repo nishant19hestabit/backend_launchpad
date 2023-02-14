@@ -3,8 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\EmailRecord;
-use App\Models\Employee;
-use App\Models\User;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -25,13 +23,11 @@ class EmployeeEmailJob implements ShouldQueue
      * @return void
      */
 
-    public $data;
     public $employee;
 
     public function __construct($data)
     {
-        $this->data = $data;
-        $this->employee = Employee::where('email', $this->data['email'])->first();
+        $this->employee = $data;
     }
 
     /**
@@ -42,8 +38,14 @@ class EmployeeEmailJob implements ShouldQueue
     public function handle()
     {
         // $emp = Employee::where('email', $this->data['email'])->first();
-        Mail::send('emails.mail', $this->data, function ($message) {
-            $message->to($this->data['email'])->subject($this->data['subject']);
+        $emailData = [
+            'name' => $this->employee['name'],
+            'email' => $this->employee['email'],
+            'subject' => 'Follow Up on ' . $this->employee['project'],
+            'project_issue' => $this->employee['project'],
+        ];
+        Mail::send('emails.mail', $emailData, function ($message) use ($emailData) {
+            $message->to($emailData['email'])->subject($emailData['subject']);
         });
     }
     public function failed(Exception $exception)
@@ -51,12 +53,12 @@ class EmployeeEmailJob implements ShouldQueue
         // Job processing failed...
         Log::info($exception->getMessage());
         $data = [
-            'name' => $this->data['name'],
-            'project_issue' => $this->data['project_issue'],
+            'name' => $this->employee['name'],
+            'project_issue' => $this->employee['project'],
         ];
         $html = view('emails.failed', compact('data'))->render();
         EmailRecord::create([
-            'emp_id' => $this->employee->id,
+            'emp_id' => $this->employee['id'],
             'status' => 'failed',
             'email_content' => $html,
         ]);
@@ -72,7 +74,7 @@ class EmployeeEmailJob implements ShouldQueue
         // Perform actions after the job has been processed...
         Log::info('Mail sent!');
         EmailRecord::create([
-            'emp_id' => $this->employee->id,
+            'emp_id' => $this->employee['id'],
             'status' => 'success',
             'email_content' => null,
         ]);

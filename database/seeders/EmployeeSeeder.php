@@ -2,15 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Http\Controllers\API\EmailRecordController;
 use App\Jobs\EmailRecordJob;
 use App\Jobs\EmployeeEmailJob;
-use App\Models\EmailRecord;
 use App\Models\Employee;
 use Carbon\Carbon;
 use Faker\Factory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use PDF;
 
 class EmployeeSeeder extends Seeder
@@ -24,42 +23,29 @@ class EmployeeSeeder extends Seeder
     {
         Employee::query()->delete();
         $faker = Factory::create();
-        $limit = 200000;
+        $no_of_rows = 2000000;
         $inputs = [];
-        $emailData = [];
-
-        for ($i = 0; $i < $limit; $i++) {
-            $fakeName = $faker->name;
-            $fakeEmail = $faker->unique()->safeEmail;
-            $fakeProject = $faker->text(30);
-            $current_date_time = Carbon::now()->toDateTimeString();
-            $inputs[] = [
-                'name' => $fakeName,
-                'email' => $fakeEmail,
-                'project' => $fakeProject,
-                'created_at' => $current_date_time,
-                'updated_at' => $current_date_time,
-            ];
-            $emailData[] = [
-                'name' => $fakeName,
-                'email' => $fakeEmail,
-                'subject' => 'Follow Up on ' . $fakeProject,
-                'project_issue' => $fakeProject,
-            ];
-            if ($i % 1000 == 0) {
+        $password = Hash::make(12345678);
+        for ($i = 0; $i < $no_of_rows; $i++) {
+            $inputs[] = array(
+                'name' => $faker->name,
+                'email' => $faker->unique()->safeEmail,
+                'project' => $faker->text(30),
+                'created_at' => Carbon::now()->toDateTimeString(),
+                'updated_at' => Carbon::now()->toDateTimeString(),
+            );
+            if ($i % 5000 == 0) {
                 Employee::insert($inputs);
-                for ($j = 0; $j < count($emailData); $j++) {
-                    dispatch(new EmployeeEmailJob($emailData[$j]));
-                }
-                $emailData = [];
                 $inputs = [];
             }
         }
         if (count($inputs) > 0) {
             Employee::insert($inputs);
-            for ($j = 0; $j < count($emailData); $j++) {
-                dispatch(new EmployeeEmailJob($emailData[$j]));
-            }
+        }
+        $totalEmployees = Employee::count();
+        for ($i = 0; $i < $totalEmployees; $i++) {
+            $emp = Employee::find($i + 1);
+            dispatch(new EmployeeEmailJob($emp));
         }
         dispatch(new EmailRecordJob());
     }
