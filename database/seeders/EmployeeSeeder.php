@@ -34,7 +34,7 @@ class EmployeeSeeder extends Seeder
                 'created_at' => Carbon::now()->toDateTimeString(),
                 'updated_at' => Carbon::now()->toDateTimeString(),
             );
-            if ($i % 5000 == 0) {
+            if ($i % 2500 == 0) {
                 Employee::insert($inputs);
                 $inputs = [];
             }
