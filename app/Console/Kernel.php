@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
         if (count($storeCommand) > 0) {
             foreach ($storeCommand as $command) {
                 $time = date('H:i', strtotime($command->start));
-                $schedule->command($command->name)->dailyAt($time);
+                $schedule->command($command->name)->timezone('Asia/Kolkata')->dailyAt($time);
             }
         }
     }
