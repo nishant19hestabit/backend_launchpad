@@ -44,7 +44,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Schedule At</label>
-                        <input type="time" class="form-control @error('time') is-invalid @enderror" name="time" value="{{old('time')}}">
+                        <input type="time" class="form-control @error('time') is-invalid @enderror" name="time" value="{{old('time')}}" required>
                         @error('time')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
