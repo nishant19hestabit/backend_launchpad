@@ -25,7 +25,6 @@ class EmployeeSeeder extends Seeder
         $faker = Factory::create();
         $no_of_rows = 2000000;
         $inputs = [];
-        $password = Hash::make(12345678);
         for ($i = 0; $i < $no_of_rows; $i++) {
             $inputs[] = array(
                 'name' => $faker->name,
