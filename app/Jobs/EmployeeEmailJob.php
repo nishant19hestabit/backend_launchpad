@@ -44,9 +44,13 @@ class EmployeeEmailJob implements ShouldQueue
             'subject' => 'Follow Up on ' . $this->employee['project'],
             'project_issue' => $this->employee['project'],
         ];
-        Mail::send('emails.mail', $emailData, function ($message) use ($emailData) {
+        $mail = Mail::send('emails.mail', $emailData, function ($message) use ($emailData) {
             $message->to($emailData['email'])->subject($emailData['subject']);
         });
+        if ($mail) {
+            $this->after();
+        }
+        $this->doThisJob();
     }
     public function failed(Exception $exception)
     {
@@ -73,10 +77,19 @@ class EmployeeEmailJob implements ShouldQueue
     {
         // Perform actions after the job has been processed...
         Log::info('Mail sent!');
+        $data = [
+            'name' => $this->employee['name'],
+            'project_issue' => $this->employee['project'],
+        ];
+        $html = view('emails.failed', compact('data'))->render();
         EmailRecord::create([
             'emp_id' => $this->employee['id'],
             'status' => 'success',
-            'email_content' => null,
+            'email_content' => $html,
         ]);
+    }
+    public function doThisJob()
+    {
+        dispatch(new EmailRecordJob());
     }
 }
